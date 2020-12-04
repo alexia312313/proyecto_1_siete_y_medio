@@ -3,16 +3,15 @@ import random
 
 # Lista con tuplas de los valores de las cartas del mazo
 # Cartas (num,palo(4=oro,3=copas,2=espadas,1=bastos,valor)
-mazo = [(1, 1, 1), (1, 2, 1), (1, 3, 1), (1, 4, 1), (2, 1, 2), (2, 2, 2), (2, 3, 2), (2, 4, 2), (3, 1, 3), (3, 2, 3),
-        (3, 3, 3), (3, 4, 3), (4, 1, 4), (4, 2, 4), (4, 3, 4), (4, 4, 4), (5, 1, 5), (5, 2, 5), (5, 3, 5), (5, 4, 5),
-        (6, 1, 6), (6, 2, 6), (6, 3, 6), (6, 4, 6), (7, 1, 7), (7, 2, 7), (7, 3, 7), (7, 4, 7), (8, 1, 8), (8, 2, 8),
-        (8, 3, 8), (8, 4, 8), (9, 1, 9), (9, 2, 9), (9, 3, 9), (9, 4, 9), (10, 1, 0.5), (10, 2, 0.5), (10, 3, 0.5),
-        (10, 4, 0.5), (11, 1, 0.5), (11, 2, 0.5), (11, 3, 0.5), (11, 4, 0.5), (12, 1, 0.5), (12, 2, 0.5), (12, 3, 0.5),
-        (12, 4, 0.5)]
+mazo_referencia = [(1, 1, 1), (1, 2, 1), (1, 3, 1), (1, 4, 1), (2, 1, 2), (2, 2, 2), (2, 3, 2), (2, 4, 2), (3, 1, 3),
+                   (3, 2, 3), (3, 3, 3), (3, 4, 3), (4, 1, 4), (4, 2, 4), (4, 3, 4), (4, 4, 4), (5, 1, 5), (5, 2, 5),
+                   (5, 3, 5), (5, 4, 5), (6, 1, 6), (6, 2, 6), (6, 3, 6), (6, 4, 6), (7, 1, 7), (7, 2, 7), (7, 3, 7),
+                   (7, 4, 7), (10, 1, 0.5), (10, 2, 0.5), (10, 3, 0.5), (10, 4, 0.5), (11, 1, 0.5), (11, 2, 0.5),
+                   (11, 3, 0.5), (11, 4, 0.5), (12, 1, 0.5), (12, 2, 0.5), (12, 3, 0.5), (12, 4, 0.5)]
 
+mazo = mazo_referencia
 jugadores = {}
-prioridad = []
-puntos = []
+estado = []
 
 # bucle for para añadir a los jugadores
 while len(jugadores) < 8:
@@ -24,9 +23,8 @@ while len(jugadores) < 8:
         # agregamos el jugador a la lista, con la carta generada
         carta = mazo[random_c]
         mazo.pop(random_c)
-        puntos.append([nombre, 20])
-        prioridad.append([carta[2], carta[1], nombre])
-        jugadores[nombre] = [carta]
+        estado.append([carta[2], carta[1], nombre, 20, "jugando"])
+        jugadores[nombre] = []
         if len(jugadores) > 1:
             continuar = input("Continuas? (Si, No): ")
             if continuar.upper() == "NO":
@@ -38,41 +36,96 @@ while len(jugadores) < 8:
               "espacios!!")
 
 # Ordenamos los jugadores dependiendo de las cartas que han sacado.
-len_lista = len(prioridad) - 1
+len_lista = len(estado) - 1
 for i in range(len_lista):
     for j in range(len_lista - i):
-        if prioridad[j] < prioridad[j + 1]:
-            aux = prioridad[j]
-            prioridad[j] = prioridad[j + 1]
-            prioridad[j + 1] = aux
-
+        if estado[j] > estado[j + 1]:
+            aux = estado[j]
+            estado[j] = estado[j + 1]
+            estado[j + 1] = aux
+for i in estado:
+    i.pop(0)
+    i.pop(0)
 # print(jugadores)  # DEBUG
-# print(mazo)       # DEBUG
-# print(prioridad)  # DEBUG
+# print(mazo)  # DEBUG
+# print(estado)  # DEBUG
+rondas = 30
+ronda = 0
+while True:
+    ronda += 1
+    if len(jugadores) == 1:
+        break
+    if ronda == rondas:
+        break
+    mazo = mazo_referencia
+    flag = False
+    k = 0
+    # comienza la ronda
+    for i in estado:
 
-num = 0
+        os.system("clear")
 
-for i in jugadores:
-    os.system("clear")
-    print(f"###JUGADOR {num+1}###")
-    while True:
-        try:
-            p_apostar = int(input("Cuantos puntos quieres apostar? "))
-        except ValueError:
-            pass
-        else:
+        num_masgrande, num = 0, 0
+
+        if i[2] == "eliminado":
             break
-    puntos[num][1] -= p_apostar
-    while True:
-        mas_cartas = input("Quieres recibir mas cartas del mazo? (Si, No): ")
-        if mas_cartas.upper() == "NO":
-            break
-        else:
-            random_c = random.randrange(len(mazo))
-            carta = mazo[random_c]
-            mazo.pop(random_c)
-            jugadores[i].append(carta)
-    num += 1
 
-print(jugadores)  # DEBUG
-print(puntos)  # DEBUG
+        print(f"###JUGADOR {i[0]}###".upper())
+
+        random_c = random.randrange(len(mazo))
+        jugadores[i[0]].append(mazo[random_c])
+        print(mazo[random_c])
+        num += mazo[random_c][2]
+        mazo.pop(random_c)
+
+        # le pregutamos cuantos puntos quiere apostar
+        while True:
+            try:
+                p_apostar = int(input("Cuantos puntos quieres apostar? "))
+            except ValueError:
+                pass
+            else:
+                if p_apostar >= i[1]:
+                    print("No puede apostar mas de lo que tienes")
+                else:
+                    break
+
+        i[1] -= p_apostar
+
+        # le preguntamos si quiere robar mas cartas
+        while True:
+            mas_cartas = input("Quieres recibir mas cartas del mazo? (Si, No): ")
+            if mas_cartas.upper() == "NO":
+                break
+            else:
+                random_c = random.randrange(len(mazo))
+                jugadores[i[0]].append(mazo[random_c])
+                print(mazo[random_c])
+                num += mazo[random_c][2]
+                mazo.pop(random_c)
+
+        # comprovamos los puntos
+        if num == 7.5:
+            i[1] += p_apostar + (p_apostar * 2)
+            flag = True
+        elif num > 7.5:
+            break
+        elif num > num_masgrande:
+            num_masgrande = [num, i[0]]
+
+        # ultima ronda si nadie ha sacado 7.5
+        k += 1
+        if len(estado) == k and not flag:
+            for m in estado:
+                print(m, num_masgrande)
+                if m[1] == num_masgrande[0]:
+                    m[1] += p_apostar + 1
+
+        # comprovamos si tiene 0 puntos para eliminar-lo
+        if i[1] <= 0:
+            i[2] = "eliminado"
+            print("Tienes 0 puntos estas eliminado")
+        # print(mazo)
+
+    # print(jugadores)  # DEBUG
+    # print(estado)  # DEBUG
