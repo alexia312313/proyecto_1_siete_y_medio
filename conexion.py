@@ -39,6 +39,5 @@ def export_query1(outfileName):
             outfile.write('  </row>\n')
         outfile.write('</mydata>\n')
         outfile.close()
-
         # desconectamos
         db.close()
