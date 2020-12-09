@@ -25,7 +25,7 @@ def main():
             nombre = input("Escribe tu nombre: ").lower()
             player_name = nombre
         else:
-            nombre = f"bot{len(jugadores)+1}"
+            nombre = f"bot{len(jugadores)}"
         # Comprobamos que el nombre sea alphanumerico y que el primer caracter sea una letra
         if nombre.isalnum() and nombre[0].isalpha() and nombre not in jugadores:
             # le generamos una carta al jugador
@@ -52,9 +52,9 @@ def main():
         i.pop(0)
         i.pop(0)
 
-    # print(jugadores)  # DEBUG
     # print(mazo)  # DEBUG
     # print(estado)  # DEBUG
+    input(jugadores)  # DEBUG
 
     rondas = 30
     ronda = 0
@@ -74,10 +74,11 @@ def main():
                 pass
             else:
                 os.system("clear")
-
                 num_masgrande, num = 0, 0
+                print(estado)
+                # input(i[0])
 
-                if i[0] == jugadores[player_name]:
+                if i[0] == player_name:
                     print(f"###JUGADOR {i[0]}###".upper())
                     # generamos al jugador una carta
                     random_c = random.randrange(len(mazo))
@@ -112,31 +113,22 @@ def main():
                             num += mazo[random_c][2]
                             mazo.pop(random_c)
                 else:
+                    input(i[0])
+                    # Generamos la ronda del bot
                     random_c = random.randrange(len(mazo))
                     jugadores[i[0]].append(mazo[random_c])
                     num += mazo[random_c][2]
                     mazo.pop(random_c)
                     while True:
-                        try:
-                            p_apostar = random.randrange(5)
-                        except ValueError:
-                            pass
-                        else:
-                            if p_apostar >= i[1]:
-                                pass
-                            else:
-                                i[1] -= p_apostar
-                                break
-                    while True:
-                        mas_cartas = random.randrange(2)
-                        if mas_cartas == 1:
+                        p_apostar = random.randrange(5)
+                        if not p_apostar >= i[1]:
+                            i[1] -= p_apostar
                             break
-                        else:
-                            random_c = random.randrange(len(mazo))
-                            jugadores[i[0]].append(mazo[random_c])
-                            print(mazo[random_c])
-                            num += mazo[random_c][2]
-                            mazo.pop(random_c)
+                    if random.randrange(10) == 1:
+                        random_c = random.randrange(len(mazo))
+                        jugadores[i[0]].append(mazo[random_c])
+                        num += mazo[random_c][2]
+                        mazo.pop(random_c)
 
                 # comprovamos los puntos
                 if num == 7.5:
@@ -160,7 +152,8 @@ def main():
                     i[2] = "eliminado"
                     print("Tienes 0 puntos, estas eliminado")
 
-                # print(mazo)
+                print(mazo)
 
-        # print(jugadores)  # DEBUG
+        # print(mazo)  # DEBUG
+        # input()
         # print(estado)  # DEBUG
