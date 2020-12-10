@@ -1,5 +1,6 @@
 import os
 import random
+import conexion
 
 
 def main():
@@ -15,9 +16,14 @@ def main():
     mazo = mazo_referencia
     jugadores = {}
     estado = []
+    min_players = conexion.import_config()[0]
+    max_players = conexion.import_config()[1]
+    max_rounds = conexion.import_config()[2]
+    initial_points = conexion.import_config()[3]
+    # auto_mode = conexion.import_config()[4]
 
     # bucle for para añadir a los jugadores
-    while len(jugadores) < 8:
+    while len(jugadores) < max_players:
         nombre = input("Escribe el nombre de un jugador: ").lower()
         # Comprobamos que el nombre sea alphanumerico y que el primer caracter sea una letra
         if nombre.isalnum() and nombre[0].isalpha() and nombre not in jugadores:
@@ -25,10 +31,10 @@ def main():
             random_c = random.randrange(len(mazo))
             carta = mazo[random_c]
             mazo.pop(random_c)
-            estado.append([carta[2], carta[1], nombre, 20, "jugando"])
+            estado.append([carta[2], carta[1], nombre, initial_points, "jugando"])
             # agregamos el jugador a la lista, con la carta generada
             jugadores[nombre] = []
-            if len(jugadores) > 1:
+            if len(jugadores) > min_players-1:
                 continuar = input("Continuas? (Si, No): ")
                 if continuar.upper() == "NO":
                     break
@@ -55,7 +61,7 @@ def main():
     # print(mazo)  # DEBUG
     # print(estado)  # DEBUG
 
-    rondas = 30
+    rondas = max_rounds
     ronda = 0
 
     while True:

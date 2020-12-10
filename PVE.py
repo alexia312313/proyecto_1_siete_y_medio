@@ -1,5 +1,6 @@
 import os
 import random
+import conexion
 
 
 def main():
@@ -16,10 +17,14 @@ def main():
     jugadores = {}
     estado = []
     player_name = ""
+    max_players = conexion.import_config()[1]
+    max_rounds = conexion.import_config()[2]
+    initial_points = conexion.import_config()[3]
+    # auto_mode = conexion.import_config()[4]
 
     # bucle for para añadir el jugador
     flag = True
-    while len(jugadores) < 8:
+    while len(jugadores) < max_players:
         if flag:
             flag = False
             nombre = input("Escribe tu nombre: ").lower()
@@ -32,7 +37,7 @@ def main():
             random_c = random.randrange(len(mazo))
             carta = mazo[random_c]
             mazo.pop(random_c)
-            estado.append([carta[2], carta[1], nombre, 20, "jugando"])
+            estado.append([carta[2], carta[1], nombre, initial_points, "jugando"])
             # agregamos el jugador a la lista, con la carta generada
             jugadores[nombre] = []
         else:
@@ -54,9 +59,9 @@ def main():
 
     # print(mazo)  # DEBUG
     # print(estado)  # DEBUG
-    input(jugadores)  # DEBUG
+    # input(jugadores)  # DEBUG
 
-    rondas = 30
+    rondas = max_rounds
     ronda = 0
 
     while True:
@@ -154,6 +159,5 @@ def main():
 
                 print(mazo)
 
-        # print(mazo)  # DEBUG
-        # input()
+        # input(mazo)  # DEBUG
         # print(estado)  # DEBUG
