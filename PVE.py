@@ -1,6 +1,7 @@
 import os
 import random
 import conexion
+import common
 
 
 def main():
@@ -17,10 +18,11 @@ def main():
     jugadores = {}
     estado = []
     player_name = ""
+    ronda = 0
     max_players = conexion.import_config()[1]
     max_rounds = conexion.import_config()[2]
     initial_points = conexion.import_config()[3]
-    # auto_mode = conexion.import_config()[4]
+    auto_mode = conexion.import_config()[4]
 
     # bucle for para añadir el jugador
     flag = True
@@ -33,25 +35,18 @@ def main():
             nombre = f"bot{len(jugadores)}"
         # Comprobamos que el nombre sea alphanumerico y que el primer caracter sea una letra
         if nombre.isalnum() and nombre[0].isalpha() and nombre not in jugadores:
-            # le generamos una carta al jugador
-            random_c = random.randrange(len(mazo))
-            carta = mazo[random_c]
-            mazo.pop(random_c)
-            estado.append([carta[2], carta[1], nombre, initial_points, "jugando"])
             # agregamos el jugador a la lista, con la carta generada
             jugadores[nombre] = []
+            # le generamos una carta al jugador
+            random_c = random.randrange(len(mazo))
+            estado.append([mazo[random_c][2], mazo[random_c][1], nombre, initial_points, "jugando"])
+            mazo.pop(random_c)
         else:
             print("El nombre tiene que ser alphanumerico, el primer caracter tiene que ser una letra y no puede "
                   "contener espacios!!")
 
     # Ordenamos los jugadores dependiendo de las cartas que han sacado.
-    len_lista = len(estado) - 1
-    for i in range(len_lista):
-        for j in range(len_lista - i):
-            if estado[j] > estado[j + 1]:
-                aux = estado[j]
-                estado[j] = estado[j + 1]
-                estado[j + 1] = aux
+    common.ordenar(estado)
 
     for i in estado:
         i.pop(0)
@@ -61,103 +56,51 @@ def main():
     # print(estado)  # DEBUG
     # input(jugadores)  # DEBUG
 
-    rondas = max_rounds
-    ronda = 0
-
-    while True:
-        if len(jugadores) == 1:
-            break
-        if ronda == rondas:
-            break
+    while ronda != max_rounds or len(estado) != 1:
+        mazo, flag = mazo_referencia, False
         ronda += 1
-        mazo = mazo_referencia
-        flag = False
-        k = 0
+
         # comienza la ronda
         for i in estado:
-            if i[2] == "eliminado":
-                pass
+            turno = 0
+            os.system("clear")
+            num_masgrande, num = 0, 0
+
+            if i[0] == player_name:
+                print(f"###JUGADOR {i[0]}###".upper())
+                num, jugadores, mazo = common.generar_carta(jugadores, mazo, num, i[0])
+                # le pregutamos cuantos puntos quiere apostar
+                p_apostar, i[1] = common.apostar_puntos(i[1])
+                # le preguntamos si quiere robar mas cartas
+                while True:
+                    mas_cartas = input("Quieres recibir mas cartas del mazo? (Si, No): ")
+                    if mas_cartas.upper() == "NO":
+                        break
+                    else:
+                        num, jugadores, mazo = common.generar_carta(jugadores, mazo, num, i[0])
             else:
-                os.system("clear")
-                num_masgrande, num = 0, 0
-                print(estado)
-                # input(i[0])
+                input(i[0])
+                # Generamos la ronda del bot
+                num, jugadores, mazo = common.generar_carta(jugadores, mazo, num, i[0])
+                while True:
+                    p_apostar = random.randrange(5)
+                    if not p_apostar >= i[1]:
+                        i[1] -= p_apostar
+                        break
+                if random.randrange(10) == 1:
+                    num, jugadores, mazo = common.generar_carta(jugadores, mazo, num, i[0])
 
-                if i[0] == player_name:
-                    print(f"###JUGADOR {i[0]}###".upper())
-                    # generamos al jugador una carta
-                    random_c = random.randrange(len(mazo))
-                    jugadores[i[0]].append(mazo[random_c])
-                    # le enseñamos la carta
-                    print(mazo[random_c])
-                    num += mazo[random_c][2]
-                    mazo.pop(random_c)
+            # comprovamos los puntos
+            turno += 1
+            flag, num_masgrande, i[1], estado = common.comprovacion_puntos(num, p_apostar, num_masgrande, i[1], i[0],
+                                                                           flag, estado, turno)
 
-                    # le pregutamos cuantos puntos quiere apostar
-                    while True:
-                        try:
-                            p_apostar = int(input("Cuantos puntos quieres apostar? "))
-                        except ValueError:
-                            pass
-                        else:
-                            if p_apostar >= i[1]:
-                                print("No puede apostar mas de lo que tienes")
-                            else:
-                                i[1] -= p_apostar
-                                break
+        # comprovamos si tiene 0 puntos para eliminar-lo
+        for i in range(len(estado)):
+            if estado[i][1] <= 0:
+                estado.pop(i)
+                print("Tienes 0 puntos, estas eliminado")
 
-                    # le preguntamos si quiere robar mas cartas
-                    while True:
-                        mas_cartas = input("Quieres recibir mas cartas del mazo? (Si, No): ")
-                        if mas_cartas.upper() == "NO":
-                            break
-                        else:
-                            random_c = random.randrange(len(mazo))
-                            jugadores[i[0]].append(mazo[random_c])
-                            print(mazo[random_c])
-                            num += mazo[random_c][2]
-                            mazo.pop(random_c)
-                else:
-                    input(i[0])
-                    # Generamos la ronda del bot
-                    random_c = random.randrange(len(mazo))
-                    jugadores[i[0]].append(mazo[random_c])
-                    num += mazo[random_c][2]
-                    mazo.pop(random_c)
-                    while True:
-                        p_apostar = random.randrange(5)
-                        if not p_apostar >= i[1]:
-                            i[1] -= p_apostar
-                            break
-                    if random.randrange(10) == 1:
-                        random_c = random.randrange(len(mazo))
-                        jugadores[i[0]].append(mazo[random_c])
-                        num += mazo[random_c][2]
-                        mazo.pop(random_c)
-
-                # comprovamos los puntos
-                if num == 7.5:
-                    i[1] += p_apostar + (p_apostar * 2)
-                    flag = True
-                elif num > 7.5:
-                    break
-                elif num > num_masgrande:
-                    num_masgrande = [num, i[0]]
-
-                # ultima ronda, si nadie ha sacado 7.5
-                k += 1
-                if len(estado) == k and not flag:
-                    for m in estado:
-                        print(m, num_masgrande)
-                        if m[1] == num_masgrande[0]:
-                            m[1] += p_apostar + 1
-
-                # comprovamos si tiene 0 puntos para eliminar-lo
-                if i[1] <= 0:
-                    i[2] = "eliminado"
-                    print("Tienes 0 puntos, estas eliminado")
-
-                print(mazo)
-
+        # print(mazo)
         # input(mazo)  # DEBUG
         # print(estado)  # DEBUG
