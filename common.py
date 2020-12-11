@@ -1,13 +1,13 @@
 import random
 
 
-def generar_carta(jugadores, mazo, num, jugador):
+def generar_carta(jugadores, mazo, sum_cartas, jugador):
     random_c = random.randrange(len(mazo))
     jugadores[jugador].append(mazo[random_c])
-    print(mazo[random_c])
-    num += mazo[random_c][2]
+    print(f"{mazo[random_c][0]} de {mazo[random_c][3]}")
+    sum_cartas.append(mazo[random_c][2])
     mazo.pop(random_c)
-    return num, jugadores, mazo
+    return sum_cartas, jugadores, mazo
 
 
 def ordenar(estado):
@@ -27,7 +27,7 @@ def apostar_puntos(puntos_jugador):
         except ValueError:
             pass
         else:
-            if p_apostar >= puntos_jugador:
+            if p_apostar > puntos_jugador:
                 print("No puede apostar mas de lo que tienes")
             else:
                 puntos_jugador -= p_apostar
@@ -35,17 +35,32 @@ def apostar_puntos(puntos_jugador):
     return p_apostar, puntos_jugador
 
 
-def comprovacion_puntos(num, p_apostar, num_masgrande, puntos_jugador, nombre, flag, estado, turno):
-    if num == 7.5:
-        puntos_jugador += p_apostar + (p_apostar * 2)
-        flag = True
-    elif num > 7.5:
-        pass
-    elif num > num_masgrande:
-        num_masgrande = [num, nombre]
-    # ultimo turno, si nadie ha sacado 7.5
-    if len(estado) == turno and not flag:
-        for i in estado:
-            if i[1] == num_masgrande[0]:
-                i[1] += p_apostar + 1
-    return flag, num_masgrande, puntos_jugador, estado
+def comprovacion_puntos(sum_cartas, p_apostar, puntos_jugador, estado, puntos_banca):
+    flag_75, flag_1 = False, False
+    for i in range(len(estado)-1):
+        # jugador
+        if sum_cartas[i] > 7.5:
+            pass
+        elif sum_cartas[i] == 7.5 and sum_cartas[len(sum_cartas) - 1] != 7.5:
+            flag_75 = True
+            puntos_jugador += p_apostar + (p_apostar * 2)
+            estado.insert(estado[len(estado) - 1], sum_cartas[i])
+            estado.pop(i)
+        elif sum_cartas[i] > sum_cartas[len(sum_cartas) - 1]:
+            flag_1 = True
+            puntos_jugador += 1
+
+        # banca
+        if sum_cartas[len(sum_cartas) - 1] > 7.5:
+            pass
+        elif not flag_75 and sum_cartas[len(sum_cartas) - 1] == 7.5:
+            puntos_banca += p_apostar + (p_apostar * 2)
+        elif not flag_1:
+            puntos_banca += 1
+
+    # comprovamos si tiene 0 puntos para eliminar-lo
+    for i in range(len(estado)):
+        if estado[i][1] <= 0:
+            estado.pop(i)
+            print("Tienes 0 puntos, estas eliminado")
+    return puntos_jugador, estado, puntos_banca
