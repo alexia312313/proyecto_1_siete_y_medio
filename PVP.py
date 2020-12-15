@@ -1,30 +1,20 @@
 import os
 import random
-import conexion
+
 import common
+import conexion
 
 
 def main():
-    # Lista con tuplas de los valores de las cartas del mazo
-    # Cartas (num,palo(4=oro,3=copas,2=espadas,1=bastos,valor)
-    mazo_referencia = [(1, 1, 1), (1, 2, 1), (1, 3, 1), (1, 4, 1), (2, 1, 2), (2, 2, 2), (2, 3, 2), (2, 4, 2),
-                       (3, 1, 3), (3, 2, 3), (3, 3, 3), (3, 4, 3), (4, 1, 4), (4, 2, 4), (4, 3, 4), (4, 4, 4),
-                       (5, 1, 5), (5, 2, 5), (5, 3, 5), (5, 4, 5), (6, 1, 6), (6, 2, 6), (6, 3, 6), (6, 4, 6),
-                       (7, 1, 7), (7, 2, 7), (7, 3, 7), (7, 4, 7), (10, 1, 0.5), (10, 2, 0.5), (10, 3, 0.5),
-                       (10, 4, 0.5), (11, 1, 0.5), (11, 2, 0.5), (11, 3, 0.5), (11, 4, 0.5), (12, 1, 0.5),
-                       (12, 2, 0.5), (12, 3, 0.5), (12, 4, 0.5)]
-
+    min_players, max_players, max_rounds, initial_points, auto_mode = conexion.import_config()
+    mazo_referencia = conexion.import_cartas()
     mazo = mazo_referencia
     jugadores = {}
     estado = []
     ronda = 0
-    min_players = conexion.import_config()[0]
-    max_players = conexion.import_config()[1]
-    max_rounds = conexion.import_config()[2]
-    initial_points = conexion.import_config()[3]
-    auto_mode = conexion.import_config()[4]
 
     # bucle for para añadir a los jugadores
+    print(f"<--Escribe el nombre de entre {min_players} y {max_players} jugadores-->")
     while len(jugadores) < max_players:
         nombre = input("Escribe el nombre de un jugador: ").lower()
         # Comprobamos que el nombre sea alphanumerico y que el primer caracter sea una letra
@@ -46,31 +36,34 @@ def main():
     # Ordenamos los jugadores dependiendo de las cartas que han sacado (metodo burbuja)
     common.ordenar(estado)
 
-    print(jugadores)  # DEBUG
-    print(mazo)  # DEBUG
-    print(estado)  # DEBUG
+    # print(jugadores)  # DEBUG
+    # print(mazo)  # DEBUG
 
     # elinamos valores que ya no necesitamos
     for i in estado:
         i.pop(0)
         i.pop(0)
 
-    while ronda != max_rounds or len(estado) != 1:
-        mazo, flag = mazo_referencia, False
+    # print(estado)  # DEBUG
+
+    while ronda != max_rounds:
+        if len(estado) == 1:
+            break
+        mazo, turno = mazo_referencia, 0
+        sum_cartas, p_apostar = [], []
         ronda += 1
 
         # comienza la ronda
         for i in estado:
-            turno = 0
+            turno += 1
             os.system("clear")
 
-            num_masgrande, num = 0, 0
-
-            print(f"###JUGADOR {i[0]}###".upper())
-            num, jugadores, mazo = common.generar_carta(jugadores, mazo, num, i[0])
+            print(f"###JUGADOR {i[0]}### puntos: {i[1]}".upper())
+            sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
 
             # le pregutamos cuantos puntos quiere apostar
-            p_apostar, i[1] = common.apostar_puntos(i[1])
+            if len(estado) != turno:
+                p_apostar, i[1] = common.apostar_puntos(p_apostar, i[1])
 
             # le preguntamos si quiere robar mas cartas
             while True:
@@ -78,19 +71,13 @@ def main():
                 if mas_cartas.upper() == "NO":
                     break
                 else:
-                    num, jugadores, mazo = common.generar_carta(jugadores, mazo, num, i[0])
+                    sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
 
-            # comprovamos los puntos
-            turno += 1
-            flag, num_masgrande, i[1], estado = common.comprovacion_puntos(num, p_apostar, num_masgrande, i[1], i[0],
-                                                                           flag, estado, turno)
-
-        # comprovamos si tiene 0 puntos para eliminar-lo
-        for i in range(len(estado)):
-            if estado[i][1] <= 0:
-                estado.pop(i)
-                print("Tienes 0 puntos, estas eliminado")
-
-        # print(mazo)
+            # ultima ronda: comprovamos los puntos y resumen ronda
+            if len(estado) == turno:
+                estado, estado[len(estado) - 1][1] = common.comprovacion_puntos(sum_cartas, p_apostar, estado, estado[len(estado) - 1][1])
+                os.system("clear")
+                estado = common.resumen_ronda(estado)
+        # print(mazo)  # DEBUG
         # print(jugadores)  # DEBUG
         # print(estado)  # DEBUG
