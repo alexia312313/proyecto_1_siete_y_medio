@@ -1,7 +1,8 @@
 import os
 import random
-import conexion
+
 import common
+import conexion
 
 
 def main():
@@ -49,7 +50,7 @@ def main():
         if len(estado) == 1:
             break
         mazo, turno = mazo_referencia, 0
-        sum_cartas = []
+        sum_cartas, p_apostar = [], []
         ronda += 1
 
         # comienza la ronda
@@ -59,32 +60,35 @@ def main():
 
             if i[0] == player_name:
                 print(f"###JUGADOR {i[0]}###".upper())
-                sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0])
+                sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
                 # le pregutamos cuantos puntos quiere apostar
-                p_apostar, i[1] = common.apostar_puntos(i[1])
+                if len(estado) != turno:
+                    p_apostar, i[1] = common.apostar_puntos(p_apostar, i[1])
                 # le preguntamos si quiere robar mas cartas
                 while True:
                     mas_cartas = input("Quieres recibir mas cartas del mazo? (Si, No): ")
                     if mas_cartas.upper() == "NO":
                         break
                     else:
-                        sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0])
+                        sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
             else:
                 # input(i[0])
                 # Generamos la ronda del bot
-                sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0])
-                while True:
-                    p_apostar = random.randrange(5)
-                    if not p_apostar > i[1]:
-                        i[1] -= p_apostar
-                        break
-                if random.randrange(10) == 1:
-                    sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0])
+                sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
+                if len(estado) != turno:
+                    while True:
+                        p_apostar = random.randrange(5)
+                        if not p_apostar > i[1]:
+                            i[1] -= p_apostar
+                            break
+                if random.randrange(5) == 1:
+                    sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
 
             # ultima ronda: comprovamos los puntos
             if len(estado) == turno:
-                i[1], estado, estado[len(estado)-1][1] = common.comprovacion_puntos(sum_cartas, p_apostar, i[1], estado, estado[len(estado)-1][1])
-
+                estado, estado[len(estado)-1][1] = common.comprovacion_puntos(sum_cartas, p_apostar, estado, estado[len(estado)-1][1])
+                os.system("clear")
+                estado = common.resumen_ronda(estado)
         # print(mazo)
         # input(mazo)  # DEBUG
         # print(estado)  # DEBUG

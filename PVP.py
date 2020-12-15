@@ -1,7 +1,8 @@
 import os
 import random
-import conexion
+
 import common
+import conexion
 
 
 def main():
@@ -13,6 +14,7 @@ def main():
     ronda = 0
 
     # bucle for para añadir a los jugadores
+    print(f"<--Escribe el nombre de entre {min_players} y {max_players} jugadores-->")
     while len(jugadores) < max_players:
         nombre = input("Escribe el nombre de un jugador: ").lower()
         # Comprobamos que el nombre sea alphanumerico y que el primer caracter sea una letra
@@ -42,13 +44,13 @@ def main():
         i.pop(0)
         i.pop(0)
 
-    print(estado)  # DEBUG
+    # print(estado)  # DEBUG
 
     while ronda != max_rounds:
         if len(estado) == 1:
             break
         mazo, turno = mazo_referencia, 0
-        sum_cartas = []
+        sum_cartas, p_apostar = [], []
         ronda += 1
 
         # comienza la ronda
@@ -57,10 +59,11 @@ def main():
             os.system("clear")
 
             print(f"###JUGADOR {i[0]}### puntos: {i[1]}".upper())
-            sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0])
+            sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
 
             # le pregutamos cuantos puntos quiere apostar
-            p_apostar, i[1] = common.apostar_puntos(i[1])
+            if len(estado) != turno:
+                p_apostar, i[1] = common.apostar_puntos(p_apostar, i[1])
 
             # le preguntamos si quiere robar mas cartas
             while True:
@@ -68,12 +71,13 @@ def main():
                 if mas_cartas.upper() == "NO":
                     break
                 else:
-                    sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0])
+                    sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
 
-            # ultima ronda: comprovamos los puntos
+            # ultima ronda: comprovamos los puntos y resumen ronda
             if len(estado) == turno:
-                i[1], estado, estado[len(estado)-1][1] = common.comprovacion_puntos(sum_cartas, p_apostar, i[1], estado, estado[len(estado)-1][1])
-
+                estado, estado[len(estado) - 1][1] = common.comprovacion_puntos(sum_cartas, p_apostar, estado, estado[len(estado) - 1][1])
+                os.system("clear")
+                estado = common.resumen_ronda(estado)
         # print(mazo)  # DEBUG
         # print(jugadores)  # DEBUG
         # print(estado)  # DEBUG
