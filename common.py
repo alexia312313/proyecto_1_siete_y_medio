@@ -60,9 +60,9 @@ def comprobar_puntos(sum_cartas, p_apostar, estado, puntos_banca):
                 flag = True
                 estado[i][1] += p_apostar[i] + (p_apostar[i] * 2)
                 puntos_banca -= p_apostar[i]
-            elif sum_cartas[i] >= sum_cartas[len(sum_cartas) - 1]:
+            elif sum_cartas[i] > sum_cartas[len(sum_cartas) - 1]:
                 flag = True
-                estado[i][1] += puntos_banca
+                estado[i][1] += p_apostar[i] + 1
                 puntos_banca -= p_apostar[i]
             if not flag:
                 desbancar.append("no")
