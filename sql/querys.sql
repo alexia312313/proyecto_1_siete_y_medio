@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+/* 9 Querys hechas */
+=======
+>>>>>>> origin/main
 -- 1 Mostrar la Carta inicial más repetida por cada jugador. (mostrar nombre jugador y carta)
 SELECT u.username, t.carta_inicial FROM usuario u
 INNER JOIN participante p ON p.id_participante=u.idusuario
