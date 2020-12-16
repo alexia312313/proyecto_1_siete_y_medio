@@ -69,7 +69,7 @@ def comprobar_puntos(sum_cartas, p_apostar, estado, puntos_banca):
                 puntos_banca += p_apostar[i]
             else:
                 desbancar.append("si")
-    input(desbancar)
+    input(desbancar)  # DEBUG
     # comprobamos si algún jugador a desbancado a la banca
     flag, nueva_banca = False, 0
     for i in range(len(desbancar)):

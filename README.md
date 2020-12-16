@@ -6,8 +6,8 @@ El siete y medio es un juego de cartas que utiliza la baraja española de 40 car
 
 - [Resumen](#resumen)
 - [Requerimientos](#requerimientos)
-- [Instalación](#instalación)
-- [Configuración](#configuración)
+- [Installation](#installation)
+- [Configuration](#configuration)
 - [Contacto](#contacto)
 
 ### Resumen
@@ -31,7 +31,7 @@ El siete y medio es un juego de cartas que utiliza la baraja española de 40 car
 - [python](https://www.python.org/downloads)
 - [git](https://git-scm.com/downloads)
 
-### Instalación
+### Installation
 
 Clona el repositorio de git `proyecto_1_siete_y_medio` y ejecuta el programa:
 
@@ -43,7 +43,7 @@ $ ./run.sh
 
 > NOTA: Si usas windows tendrás que ejecutar-lo desde git bash
 
-### Configuración
+### Configuration
 
 - `Basic_Config_Game.xml`:  contiene la configuración básica de la partida.
 
