@@ -17,7 +17,7 @@ def main():
     print(f"<--Escribe el nombre de entre {min_players} y {max_players} jugadores-->")
     while len(jugadores) < max_players:
         nombre = input("Escribe el nombre de un jugador: ").lower()
-        # Comprobamos que el nombre sea alphanumerico y que el primer caracter sea una letra
+        # Comprobamos que el nombre sea alfanumérico y que el primer carácter sea una letra
         if nombre.isalnum() and nombre[0].isalpha() and nombre not in jugadores:
             # agregamos el jugador a la lista, con la carta generada
             jugadores[nombre] = []
@@ -30,16 +30,16 @@ def main():
                 if continuar.upper() == "NO":
                     break
         else:
-            print("El nombre tiene que ser alphanumerico, el primer caracter tiene que ser una letra y no puede "
+            print("El nombre tiene que ser alfanumérico, el primer carácter tiene que ser una letra y no puede "
                   "contener espacios!!")
 
-    # Ordenamos los jugadores dependiendo de las cartas que han sacado (metodo burbuja)
+    # Ordenamos los jugadores dependiendo de las cartas que han sacado (método burbuja)
     common.ordenar(estado)
 
     # print(jugadores)  # DEBUG
     # print(mazo)  # DEBUG
 
-    # elinamos valores que ya no necesitamos
+    # eliminamos valores que ya no necesitamos
     for i in estado:
         i.pop(0)
         i.pop(0)
@@ -61,21 +61,23 @@ def main():
             print(f"###JUGADOR {i[0]}### puntos: {i[1]}".upper())
             sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
 
-            # le pregutamos cuantos puntos quiere apostar
+            # le preguntamos cuantos puntos quiere apostar
             if len(estado) != turno:
                 p_apostar, i[1] = common.apostar_puntos(p_apostar, i[1])
 
             # le preguntamos si quiere robar mas cartas
             while True:
+                if sum_cartas[turno-1] >= 7.5:
+                    break
                 mas_cartas = input("Quieres recibir mas cartas del mazo? (Si, No): ")
                 if mas_cartas.upper() == "NO":
                     break
                 else:
                     sum_cartas, jugadores, mazo = common.generar_carta(jugadores, mazo, sum_cartas, i[0], turno)
 
-            # ultima ronda: comprovamos los puntos y resumen ronda
+            # última ronda: comprobamos los puntos y resumen ronda
             if len(estado) == turno:
-                estado, estado[len(estado) - 1][1] = common.comprovacion_puntos(sum_cartas, p_apostar, estado, estado[len(estado) - 1][1])
+                estado, estado[len(estado) - 1][1] = common.comprobar_puntos(sum_cartas, p_apostar, estado, estado[len(estado) - 1][1])
                 os.system("clear")
                 estado = common.resumen_ronda(estado)
         # print(mazo)  # DEBUG
