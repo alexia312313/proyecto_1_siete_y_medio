@@ -1,10 +1,10 @@
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree
 
 
-# importacion  del fitxero de configuracion (Basic_Config_Game.xml)
+# importación  del fichero de configuración (Basic_Config_Game.xml)
 def import_config():
     min_players, max_players, max_rounds, initial_points, auto_mode, num = "", "", "", "", "", 0
-    tree = ET.parse("Basic_Config_Game.xml")
+    tree = xml.etree.ElementTree.parse("Basic_Config_Game.xml")
     root = tree.getroot()
     config = []
     for child in root:
@@ -24,9 +24,9 @@ def import_config():
     return min_players, max_players, max_rounds, initial_points, auto_mode
 
 
-# importacion  del fitxero de configuracion (Cartas.xml)
+# importación  del fichero de configuración (Cartas.xml)
 def import_cartas():
-    tree = ET.parse("Cartas.xml")
+    tree = xml.etree.ElementTree.parse("Cartas.xml")
     root = tree.getroot()
     config = []
     mazo = []
