@@ -1,9 +1,8 @@
 -- 1 Mostrar la Carta inicial más repetida por cada jugador(mostrar nombre jugador y carta). 
-	select u.username, t.carta_inicial,count(t.carta_inicial), t.idpartida  from usuario u
+	select u.username, t.carta_inicial from usuario u
 	inner join participante p on p.id_participante=u.idusuario
 	inner join turnos t on t.idparticipante=p.id_participante
-    group by t.carta_inicial 
-    order by t.carta_inicial desc;
+    group by username;
 -- 2 Jugador que realiza la apuesta más alta por partida. (Mostrar nombre jugador)
 select nombre,max(apuesta),idpartida
 from
@@ -82,8 +81,18 @@ group by idpartida;
 select avg(apuesta), idpartida from turnos
 group by idpartida;
 -- 12 Mostrar los datos de los usuarios que no son bot, así como cual ha sido su última apuesta en cada partida que ha jugado.
-select * from usuario;
+select *,(
+select max(apuesta) from turnos
+group by idpartida
+order by idpartida desc limit 1
+) as ultima_apuesta
+from usuario;
 -- 13 Calcular el valor total de las cartas y el numero total de cartas que se han dado inicialmente en las manos en la partida. Por ejemplo, en la partida se han dado 50 cartas y el valor total de las cartas es 47,5.
-select count(turnos.carta_inicial) as total, idpartida, sum(valor) from turnos
-partida;
+select count(carta_inicial) as total, idpartida ,(
+select sum(valor) from cartas c
+where t.idturnos=cartas.idcartas
+) as valor_total
+from turnos t
+group by idpartida;
+
 -- 14 Diferencia de puntos de los participantes de las partidas entre la ronda 1 y 5. Ejemplo: Rafa tenia 20 puntos, en la ronda 5 tiene 15, tiene -5 puntos de diferencia.
