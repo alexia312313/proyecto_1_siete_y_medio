@@ -1,7 +1,7 @@
 import random
 
 
-# funcion de generar cartas
+# función de generar cartas
 def generar_carta(jugadores, mazo, sum_cartas, jugador, num_jugador):
     random_c = random.randrange(len(mazo))
     jugadores[jugador].append(mazo[random_c])
@@ -14,7 +14,7 @@ def generar_carta(jugadores, mazo, sum_cartas, jugador, num_jugador):
     return sum_cartas, jugadores, mazo
 
 
-# funcion de ordenacion (metodo burbuja)
+# función de ordenación (método burbuja)
 def ordenar(estado):
     len_lista = len(estado) - 1
     for i in range(len_lista):
@@ -25,7 +25,7 @@ def ordenar(estado):
                 estado[j + 1] = aux
 
 
-# funcion donde el jugador aposta puntos
+# función donde el jugador aposta puntos
 def apostar_puntos(p_apostar, puntos_jugador):
     while True:
         try:
@@ -42,9 +42,11 @@ def apostar_puntos(p_apostar, puntos_jugador):
     return p_apostar, puntos_jugador
 
 
-# funcion que comprueba los puntos de todos los jugadores y les resta o suma dependiendo el resultado
-def comprovacion_puntos(sum_cartas, p_apostar, estado, puntos_banca):
+# función que comprueba los puntos de todos los jugadores y les resta o suma dependiendo el resultado
+def comprobar_puntos(sum_cartas, p_apostar, estado, puntos_banca):
     flag = False
+    # aquí pondremos si los jugadores han ganado a la banca
+    desbancar = []
     # print(sum_cartas)  # DEBUG
     for i in range(len(estado) - 1):
         if sum_cartas[len(sum_cartas) - 1] > 7.5:
@@ -55,24 +57,37 @@ def comprovacion_puntos(sum_cartas, p_apostar, estado, puntos_banca):
             if sum_cartas[i] > 7.5:
                 pass
             elif sum_cartas[i] == 7.5 and sum_cartas[len(sum_cartas) - 1] != 7.5:
+                flag = True
                 estado[i][1] += p_apostar[i] + (p_apostar[i] * 2)
                 puntos_banca -= p_apostar[i]
-                estado.insert(estado[len(estado) - 1], sum_cartas[i])
-                estado.pop(i)
             elif sum_cartas[i] >= sum_cartas[len(sum_cartas) - 1]:
                 flag = True
                 estado[i][1] += puntos_banca
                 puntos_banca -= p_apostar[i]
             if not flag:
+                desbancar.append("no")
                 puntos_banca += p_apostar[i]
+            else:
+                desbancar.append("si")
+    input(desbancar)
+    # comprobamos si algún jugador a desbancado a la banca
+    flag, nueva_banca = False, 0
+    for i in range(len(desbancar)):
+        if desbancar[-i] == "si":
+            flag = True
+            nueva_banca = i
+    if flag:
+        estado.insert(len(estado), estado[nueva_banca])
+        estado.pop(nueva_banca)
+
     return estado, puntos_banca
 
 
-# funcion para printar el resumen de la ronda y eliminar si un jugador tiene 0 puntos
+# función para imprimir el resumen de la ronda y eliminar si un jugador tiene 0 puntos
 def resumen_ronda(estado):
     print("Resumen de la ronda")
     for i in range(len(estado)):
-        # comprovamos si tiene 0 puntos para eliminar-lo
+        # comprobamos si tiene 0 puntos para eliminar-lo
         if estado[i][1] <= 0:
             print(f"Jugador {estado[i][0]}: Eliminado")
             estado.pop(i)
