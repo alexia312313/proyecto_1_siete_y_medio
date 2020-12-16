@@ -1,4 +1,20 @@
 import random
+import conexion
+from sys import platform
+
+min_players, max_players, max_rounds, initial_points, auto_mode = conexion.import_config()
+mazo_referencia = conexion.import_cartas()
+
+
+# detectamos el sistema para que nuestro programa se pueda ejecutar en todas la plataformas
+def detect_system(clear=""):
+    if platform == "linux" or platform == "linux2":
+        clear = "clear"
+    elif platform == "darwin":
+        clear = "clear"
+    elif platform == "win32":
+        clear = "cls"
+    return clear
 
 
 # función de generar cartas
@@ -69,7 +85,7 @@ def comprobar_puntos(sum_cartas, p_apostar, estado, puntos_banca):
                 puntos_banca += p_apostar[i]
             else:
                 desbancar.append("si")
-    input(desbancar)  # DEBUG
+    # input(desbancar)  # DEBUG
     # comprobamos si algún jugador a desbancado a la banca
     flag, nueva_banca = False, 0
     for i in range(len(desbancar)):
@@ -84,8 +100,8 @@ def comprobar_puntos(sum_cartas, p_apostar, estado, puntos_banca):
 
 
 # función para imprimir el resumen de la ronda y eliminar si un jugador tiene 0 puntos
-def resumen_ronda(estado):
-    print("Resumen de la ronda")
+def resumen_ronda(estado, ronda):
+    print(f"Resumen de la ronda {ronda}")
     for i in range(len(estado)):
         # comprobamos si tiene 0 puntos para eliminar-lo
         if estado[i][1] <= 0:

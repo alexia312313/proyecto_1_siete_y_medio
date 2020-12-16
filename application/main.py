@@ -2,7 +2,7 @@ import os
 
 import PVE
 import PVP
-import conexion
+import common
 
 while True:
     menu = input("""<--- Menu Proyecto 7 y medio --->
@@ -10,14 +10,13 @@ while True:
 2 Jugador contra bots
 3 Salir
 -->""")
-    os.system("clear")
-
+    os.system(common.detect_system())
     if menu == "1":
         PVP.main()
     elif menu == "2":
-        if conexion.import_config()[4].capitalize() == "False":
+        if common.auto_mode.capitalize() == "False":
             input("La opción contra bots está desactivada!!")
-        elif conexion.import_config()[4].capitalize() == "True":
+        elif common.auto_mode.capitalize() == "True":
             PVE.main()
         else:
             input("Error al cargar el archivo de configuración")

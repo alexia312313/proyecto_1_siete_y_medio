@@ -1,3 +1,3 @@
-# shellcheck disable=SC2164
-cd application
+#!/bin/sh
+cd application || exit
 python3 main.py

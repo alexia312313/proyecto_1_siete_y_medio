@@ -38,6 +38,7 @@ Clona el repositorio de git `proyecto_1_siete_y_medio` y ejecuta el programa:
 ```
 $ git clone git://github.com/AlexDltg/proyecto_1_siete_y_medio.git
 $ cd proyecto_1_siete_y_medio
+$ chmod +x run.sh
 $ ./run.sh
 ```
 
