@@ -5,7 +5,7 @@ import common
 
 
 def main():
-    mazo = common.mazo_referencia
+    mazo = common.conexion.import_cartas()
     jugadores = {}
     estado = []
     ronda = 0
@@ -49,7 +49,7 @@ def main():
             os.system(common.detect_system())
             print(f"El Ganador es {estado[0][0]}!!! 😀")
             break
-        mazo, turno = common.mazo_referencia, 0
+        mazo, turno = common.conexion.import_cartas(), 0
         sum_cartas, p_apostar = [], []
         ronda += 1
 

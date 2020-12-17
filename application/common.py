@@ -101,13 +101,16 @@ def comprobar_puntos(sum_cartas, p_apostar, estado, puntos_banca):
 
 # función para imprimir el resumen de la ronda y eliminar si un jugador tiene 0 puntos
 def resumen_ronda(estado, ronda):
+    eliminados = []
     print(f"Resumen de la ronda {ronda}")
     for i in range(len(estado)):
         # comprobamos si tiene 0 puntos para eliminar-lo
         if estado[i][1] <= 0:
             print(f"Jugador {estado[i][0]}: Eliminado")
-            estado.pop(i)
+            eliminados.append(i)
         else:
             print(f"Jugador {estado[i][0]}: {estado[i][1]} puntos")
+    for i in eliminados:
+        estado.pop(i)
     input()
     return estado
